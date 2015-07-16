@@ -34,6 +34,8 @@
 		</Compiler>
 		<Unit filename="RSA.cpp" />
 		<Unit filename="RSA.h" />
+		<Unit filename="lib/Bignum.cpp" />
+		<Unit filename="lib/Bignum.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

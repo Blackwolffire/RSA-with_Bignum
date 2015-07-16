@@ -14,6 +14,7 @@ class Bignum
 {
 
     public:
+        Bignum(std::string str);
         Bignum(unsigned long long int base = 0, bool sign = false);
         Bignum(const Bignum& nb);
         //~Bignum();
@@ -53,6 +54,8 @@ class Bignum
         std::istream& enter(std::istream &flux);
         void BigPow(unsigned long long int exponent);
         void BigPow(Bignum exponent);
+        unsigned long long int getSize() const {return A_Bignum.size();}
+        bool getSign() const {return A_IsSigned;}
 
     private:
         std::vector<unsigned char> A_Bignum;

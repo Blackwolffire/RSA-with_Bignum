@@ -1,14 +1,79 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="RSA.h" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="6" zoom_2="0">
+	<File name="lib\Bignum.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="3" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="63" topLine="0" />
+			<Cursor1 position="1709" topLine="42" />
+		</Cursor>
+		<Folding>
+			<Collapse line="9" />
+			<Collapse line="15" />
+			<Collapse line="21" />
+			<Collapse line="27" />
+			<Collapse line="33" />
+			<Collapse line="39" />
+			<Collapse line="45" />
+			<Collapse line="51" />
+			<Collapse line="57" />
+			<Collapse line="63" />
+			<Collapse line="69" />
+			<Collapse line="74" />
+			<Collapse line="79" />
+			<Collapse line="86" />
+			<Collapse line="103" />
+			<Collapse line="111" />
+			<Collapse line="119" />
+			<Collapse line="133" />
+			<Collapse line="143" />
+			<Collapse line="152" />
+			<Collapse line="161" />
+			<Collapse line="190" />
+			<Collapse line="197" />
+			<Collapse line="206" />
+			<Collapse line="223" />
+			<Collapse line="233" />
+			<Collapse line="238" />
+			<Collapse line="243" />
+			<Collapse line="265" />
+			<Collapse line="287" />
+			<Collapse line="292" />
+			<Collapse line="297" />
+			<Collapse line="302" />
+			<Collapse line="307" />
+			<Collapse line="312" />
+			<Collapse line="317" />
+			<Collapse line="354" />
+			<Collapse line="405" />
+			<Collapse line="453" />
+			<Collapse line="495" />
+			<Collapse line="501" />
+			<Collapse line="539" />
+			<Collapse line="545" />
+			<Collapse line="606" />
+			<Collapse line="619" />
+			<Collapse line="625" />
+			<Collapse line="632" />
+			<Collapse line="638" />
+		</Folding>
+	</File>
+	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="9" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="213" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="5" zoom_2="0">
+	<File name="RSA.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="3" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="80" topLine="0" />
+			<Cursor1 position="174" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="RSA.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="5" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="304" topLine="4" />
+		</Cursor>
+	</File>
+	<File name="lib\Bignum.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="4" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="649" topLine="9" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
