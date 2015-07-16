@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1437076186 source:c:\users\seasonalflat\desktop\rsa-with_bignum\rsa.cpp
+
+1437076249 source:c:\users\seasonalflat\desktop\rsa-with_bignum\main.cpp
+	<iostream>
+	"RSA.h"
+
+1437076255 c:\users\seasonalflat\desktop\rsa-with_bignum\rsa.h
+	"lib\Bignumh"
+
