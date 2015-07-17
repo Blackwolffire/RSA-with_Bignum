@@ -16,8 +16,10 @@ class RSA_System{
         RSA_System();
         //~RSA_System();
 
+        static Bignum getLeastFactor(Bignum nb); /// mettre en private
         static bool isPrime(const Bignum& nb); /// mettre en private
         static Bignum getPrime(const unsigned int& nb); /// mettre en private
+        static Bignum getNextPrime(Bignum nb); /// mettre en private
 
     private:
 

@@ -5,10 +5,13 @@ using namespace std;
 
 int main()
 {
-    Bignum prout("9007199254740881");
+    Bignum prout(0);
+
+    //cout << RSA_System::isPrime(prout);
 
     //display(prout);
-    cout << RSA_System::getPrime(1000) << '\n';
+    for(; prout < 1000000; prout = RSA_System::getNextPrime(prout))
+        cout << prout << ' ';
 
     return 0;
 }

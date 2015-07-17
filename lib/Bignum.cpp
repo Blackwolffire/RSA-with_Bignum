@@ -125,7 +125,7 @@ std::ostream& Bignum::display(std::ostream &flux) const
         for(long long int i = A_Bignum.size() - 1; i >= 0; --i)
             flux <<  static_cast<uint16_t>(A_Bignum[i]);
     else
-        flux << 0;
+        flux << "NULL";
 
     return flux;
 }
@@ -209,6 +209,9 @@ bool Bignum::operator==(unsigned long long int nb) const
 
     if(A_IsSigned || A_Bignum.size() > 20)
         return false;
+
+    if(!nb && A_Bignum.size() == 1 && !A_Bignum[0])
+        return true;
 
     for(i = 0; nb > 0; ++i, nb /= 10)
         if(i >= A_Bignum.size() || A_Bignum[i] != nb % 10)
@@ -343,7 +346,8 @@ void Bignum::operator+=(unsigned long long int nb)
             nb /= 10;
         }
     }
-    while(A_Bignum.size() && !A_Bignum.back())
+    A_Bignum.push_back(0);
+    while(A_Bignum.size() > 1 && !A_Bignum.back())
         A_Bignum.pop_back();
     if(A_Bignum.size() <= 0)
         A_IsSigned = false;
@@ -394,7 +398,8 @@ void Bignum::operator+=(const Bignum& nb)
             retenue = value / 10;
         }
     }
-    while(A_Bignum.size() && !A_Bignum.back())
+    A_Bignum.push_back(0);
+    while(A_Bignum.size() > 1 && !A_Bignum.back())
         A_Bignum.pop_back();
     if(A_Bignum.size() <= 0)
         A_IsSigned = false;
@@ -442,7 +447,8 @@ void Bignum::operator-=(unsigned long long int nb)
             }
         }
     }
-    while(A_Bignum.size() && !A_Bignum.back())
+    A_Bignum.push_back(0);
+    while(A_Bignum.size() > 1 && !A_Bignum.back())
         A_Bignum.pop_back();
     if(A_Bignum.size() <= 0)
         A_IsSigned = false;
@@ -484,7 +490,8 @@ void Bignum::operator-=(const Bignum& nb)
             A_Bignum[i] -= cp.A_Bignum[i];
         }
     }
-    while(A_Bignum.size() && !A_Bignum.back())
+    A_Bignum.push_back(0);
+    while(A_Bignum.size() > 1 && !A_Bignum.back())
         A_Bignum.pop_back();
     if(A_Bignum.size() <= 0)
         A_IsSigned = false;
@@ -504,6 +511,9 @@ void Bignum::operator*=(const Bignum nb)
     Bignum cp(*this), *tab;
     *this = 0;
 
+    if(cp == 0 || nb == 0)
+        return;
+
     /*
     c'est de la merde ça pour multiplier
     for(Bignum i(0); i < nb; ++i)
@@ -514,7 +524,7 @@ void Bignum::operator*=(const Bignum nb)
 
     for(unsigned long long int  i(0); i < nb.A_Bignum.size(); ++i){
         retenue = 0;
-        for(unsigned long long int j(0); j < i; ++j)
+        for(unsigned long long int j(1); j < i; ++j)
             tab[i].A_Bignum.push_back(0);
         for(unsigned long long int j(0); j < cp.A_Bignum.size(); ++j){
 
@@ -544,10 +554,13 @@ void Bignum::operator/=(const unsigned long long int& nb)
 
 void Bignum::operator/=(Bignum nb)
 {
-    bool cpSign(A_IsSigned), cpNbSign(nb.A_IsSigned), zero(false);
+    bool cpSign(A_IsSigned), cpNbSign(nb.A_IsSigned);
     unsigned long long int dividand;
     Bignum cp(*this), change;
     *this = 0;
+
+    if(cp == 0 || nb == 0)
+        return;
 
     cp.A_IsSigned = nb.A_IsSigned = false;
 
@@ -555,23 +568,12 @@ void Bignum::operator/=(Bignum nb)
         dividand = 0;
         change = 0;
 
-        if(cp.A_Bignum[cp.A_Bignum.size() - 1] != 0)
+        //if(cp.A_Bignum[cp.A_Bignum.size() - 1] != 0){
             while(cp.A_Bignum.size() > 0 && change < nb){
                 change = change * 10 + cp.A_Bignum[cp.A_Bignum.size() - 1];
                 cp.A_Bignum.pop_back();
             }
-        else{
-            while(cp.A_Bignum.size() > 0 && cp.A_Bignum[cp.A_Bignum.size() - 1] == 0){
-                change.A_Bignum.push_back(0);
-                cp.A_Bignum.pop_back();
-            }
-            zero = true;
-        }
-
-        if(zero){
-            *this *= pow_int(10, change.A_Bignum.size());
-            zero = false;
-        }else{
+          //  std::cout << change * 10;
             while(change >= nb){
                 change -= nb;
                 ++dividand;
@@ -581,11 +583,19 @@ void Bignum::operator/=(Bignum nb)
             if(change != 0 && cp.A_Bignum.size())
                 for(unsigned long long int i(0); i < change.A_Bignum.size(); ++i)
                     cp.A_Bignum.push_back(change.A_Bignum[i]);
-        }
+        /*}else{
+            cp.A_Bignum.pop_back();
+            while(cp.A_Bignum.size() > 0 && cp.A_Bignum[cp.A_Bignum.size() - 1] == 0){
+                change.A_Bignum.push_back(0);
+                cp.A_Bignum.pop_back();
+            }
+            *this *= pow_int(10, change.A_Bignum.size());
+            std::cout << "c " << change << std::endl;
+        }*/
     }
 
-    if(cp.A_Bignum[cp.A_Bignum.size() - 1] == 0)
-        *this *= pow_int(10, cp.A_Bignum.size());
+    /*if(cp.A_Bignum[cp.A_Bignum.size() - 1] == 0)
+        *this *= pow_int(10, cp.A_Bignum.size());*/
 
     A_Rest.resize(0, 0);
     if(change != 0)
@@ -611,7 +621,8 @@ void Bignum::operator%=(const Bignum& nb)
     for(unsigned long long int i(0); i < A_Rest.size(); ++i)
         A_Bignum.push_back(A_Rest[i]);
 
-    while(A_Bignum.size() && !A_Bignum.back())
+    A_Bignum.push_back(0);
+    while(A_Bignum.size() > 1 && !A_Bignum.back())
         A_Bignum.pop_back();
     A_Rest.resize(0, 0);
 }
