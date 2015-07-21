@@ -508,7 +508,8 @@ void Bignum::operator*=(const unsigned long long int& nb)
 void Bignum::operator*=(const Bignum nb)
 {
     unsigned char value, retenue;
-    Bignum cp(*this), *tab;
+    Bignum cp(*this);
+    std::vector<Bignum> tab;
     *this = 0;
 
     if(cp == 0 || nb == 0)
@@ -520,7 +521,8 @@ void Bignum::operator*=(const Bignum nb)
         *this += cp;
     */
 
-    tab = new Bignum[nb.A_Bignum.size()];
+    tab.resize(nb.A_Bignum.size(), 0);
+    tab[0].A_Bignum.pop_back();
 
     for(unsigned long long int  i(0); i < nb.A_Bignum.size(); ++i){
         retenue = 0;
@@ -542,8 +544,6 @@ void Bignum::operator*=(const Bignum nb)
     A_IsSigned = A_Bignum.size() && ((cp.A_IsSigned || nb.A_IsSigned) && !(cp.A_IsSigned && nb.A_IsSigned));
     if(A_Rest.size())
         A_Rest.resize(0, 0);
-
-    delete tab;
 }
 
 void Bignum::operator/=(const unsigned long long int& nb)

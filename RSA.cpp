@@ -6,7 +6,7 @@
 
 #include "RSA.h"
 
-RSA_System::RSA_System(){}
+using namespace std;
 
 Bignum RSA_System::getLeastFactor(Bignum nb)
 {
@@ -53,7 +53,7 @@ Bignum RSA_System::getLeastFactor(Bignum nb)
 bool RSA_System::isPrime(const Bignum& nb)
 {
     if(nb.getSign()){
-        std::cout << "Erreur: Le nombre est negatif.\n";
+        cout << "Erreur: Le nombre est negatif.\n";
         return false;
     }
     return nb == getLeastFactor(nb);
@@ -80,3 +80,131 @@ Bignum RSA_System::getNextPrime(Bignum nb)
     }while(!isPrime(nb));
     return nb;
 }
+
+Bignum RSA_System::getHashKey(string str)
+{
+    Bignum result;
+    result = getNumberStr(str);
+    return result % MAX_HASH_NB;
+}
+
+string RSA_System::getNumberStr(string str)
+{
+    string strResult = "";
+
+    for(unsigned short int i(0); i < str.length(); ++i)
+        strResult += getCaracStrNb(str[i]);
+    return strResult;
+}
+
+string RSA_System::getCaracStrNb(unsigned char carac)
+{
+    string result = "";
+
+    while(carac > 0){
+        result += carac % 10 + '0';
+        carac /= 10;
+    }
+    return result;
+}
+
+vector<Bignum> RSA_System::getPrimeNumber(string str)
+{
+    char carac;
+    string cp_str(str);
+    Bignum p, q;
+    vector<Bignum> result;
+    result.resize(3, 0);
+
+    result[0] = getNextPrime(getHashKey(str));
+
+    for(unsigned short int i(0); i < str.length() / 2; ++i){
+        carac = str[i];
+        cp_str[i] = str[str.length() - 1 - i];
+        cp_str[str.length() - 1 - i] = carac;
+    }
+    result[1] = getNextPrime(getHashKey(cp_str));
+
+    p = getNumberStr(str);
+    q = getNumberStr(cp_str);
+    p *= q;
+
+    result[2] = getNextPrime(q % MAX_HASH_NB);
+
+    return result;
+}
+
+vector<Bignum> RSA_System::Extended_Euclidean_Algorithm(const Bignum& a, const Bignum& b)
+{
+    Bignum r(a), r_(b), u(1), v(0), u_(0), v_(1), q, rs, us, vs;
+    vector<Bignum> result;
+
+    if(a < 0 || b < 0){
+        cout << "Erreur: Le nombre est negatif.\n";
+        return result;
+    }
+
+/// MERCI WIKIPEDIA♥♥♥
+    while(r_ != 0){
+        q = r / r_;
+        rs = r;
+        us = u;
+        vs = v;
+        r = r_;
+        u = u_;
+        v = v_;
+        r_ = rs - q * r_;
+        u_ = us - q * u_;
+        v_ = vs - q * v_;
+    }
+    result.resize(3, 0);
+    result[0] = r;
+    result[1] = u;
+    result[2] = v;
+    return result;
+}
+
+/// NON STATIC /////////////////////////////////////////////////////
+
+RSA_System::RSA_System()
+{
+}
+
+RSA_System::RSA_System(string str)
+{
+    RSA_Init(str);
+}
+
+void RSA_System::RSA_Init(string str)
+{
+    Bignum fi, k(0);
+    vector<Bignum> PQE = getPrimeNumber(str);
+
+    n = PQE[0] * PQE[1];
+    fi = (PQE[0] - 1) * (PQE[1] - 1);
+    e = PQE[2];
+
+    PQE = Extended_Euclidean_Algorithm(e, fi);
+    d = PQE[1];
+    while(d <= 2 || d >= fi){
+        if(d < 0){
+            if(k < 0)
+                k = 1;
+            else
+                k = "-1";
+        }else{
+            if(k < 0)
+                --k;
+            else
+                ++k;
+        }
+        d = PQE[1] - k * fi;
+    }
+    //(U0−K×M)
+}
+
+
+
+
+
+
