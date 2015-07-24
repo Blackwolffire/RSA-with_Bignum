@@ -3,10 +3,12 @@
  * 07/16/2015 | 07/16/2015
  * Defines functions for RSA class.
  */
-
+#include <fstream>
 #include "RSA.h"
 
 using namespace std;
+
+/// STATIC /////////////////////////////////////////////////////////
 
 Bignum RSA_System::getLeastFactor(Bignum nb)
 {
@@ -129,7 +131,7 @@ vector<Bignum> RSA_System::getPrimeNumber(string str)
     q = getNumberStr(cp_str);
     p *= q;
 
-    result[2] = getNextPrime(q % MAX_HASH_NB);
+    result[2] = getNextPrime(p % getNextPrime(MAX_HASH_NB / 100));
 
     return result;
 }
@@ -164,13 +166,26 @@ vector<Bignum> RSA_System::Extended_Euclidean_Algorithm(const Bignum& a, const B
     return result;
 }
 
+bool RSA_System::fileExist (const string& name)
+{
+    ifstream file(name.c_str());
+
+    if (file.good()){
+        file.close();
+        return true;
+    }else{
+        file.close();
+        return false;
+    }
+}
+
 /// NON STATIC /////////////////////////////////////////////////////
 
-RSA_System::RSA_System()
+RSA_System::RSA_System() : A_IsInit(false)
 {
 }
 
-RSA_System::RSA_System(string str)
+RSA_System::RSA_System(string str) : A_IsInit(false)
 {
     RSA_Init(str);
 }
@@ -185,6 +200,7 @@ void RSA_System::RSA_Init(string str)
     e = PQE[2];
 
     PQE = Extended_Euclidean_Algorithm(e, fi);
+
     d = PQE[1];
     while(d <= 2 || d >= fi){
         if(d < 0){
@@ -193,15 +209,95 @@ void RSA_System::RSA_Init(string str)
             else
                 k = "-1";
         }else{
-            if(k < 0)
-                --k;
+            if(d <= 2)
+                if(k < 0)
+                    --k;
+                else
+                    ++k;
             else
-                ++k;
+                if(k < 0)
+                    ++k;
+                else
+                    --k;
         }
         d = PQE[1] - k * fi;
     }
-    //(U0−K×M)
+    A_IsInit = true;
 }
+
+Bignum RSA_System::crypt_byte(char data)
+{
+    Bignum result(static_cast<unsigned short int>(data));
+
+    if(!A_IsInit){
+        cout << "Erreur: RSA_System non initialise.\n";
+        return result;
+    }
+
+    result.BigPow(e);
+    result %= n;
+
+    return result;
+}
+
+void RSA_System::crypt_string(string destination, std::string data)
+{
+    char carac;
+    ofstream file;
+
+    if(fileExist(destination)){
+        cout << "Erreur: Le fichier " + destination + " existe deja. Voulez-vous le supprimer? (y/n)\n";
+        cin >> carac;
+        if(toupper(carac) == 'Y')
+            remove(destination.c_str());
+        else
+            return;
+    }
+
+    file.open(destination.c_str());
+
+    if(!file){
+        cout << "Erreur: Le fichier " + destination + " ne peut pas s'ouvrir.\n";
+        return;
+    }
+
+    for(unsigned long long int i(0); i < data.length();){
+        file << crypt_byte(data[i]);
+        cout << "chargement: " << (++i * 100 / data.length()) << "%\n";
+    }
+
+    file.close();
+}
+
+void RSA_System::crypt_file(string destination, std::ifstream dataFile)
+{
+    char carac;
+    ofstream file;
+
+    if(fileExist(destination)){
+        cout << "Erreur: Le fichier " + destination + " existe deja. Voulez-vous le supprimer? (y/n)\n";
+        cin >> carac;
+        if(toupper(carac) == 'Y')
+            remove(destination.c_str());
+        else
+            return;
+    }
+
+    file.open(destination.c_str());
+
+    if(!file){
+        cout << "Erreur: Le fichier " + destination + " ne peut pas s'ouvrir.\n";
+        return;
+    }
+
+    for(unsigned long long int i(0); i < data.length();){
+        file << crypt_byte(data[i]);
+        cout << "chargement: " << (++i * 100 / data.length()) << "%\n";
+    }
+
+    file.close();
+}
+
 
 
 

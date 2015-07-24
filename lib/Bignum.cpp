@@ -1,6 +1,6 @@
 /** Bignum.cpp
  * by Blackwolffire
- * 02/13/2015 | 07/16/2015
+ * 02/13/2015 | 07/24/2015
  * Defines functions for Bignum class.
  */
 
@@ -104,7 +104,10 @@ Bignum::Bignum(unsigned long long int base, bool sign) : A_Bignum(0)
 {
     A_IsSigned = false;
     *this += base;
-    A_IsSigned = sign;
+    if(base)
+        A_IsSigned = sign;
+    else
+        A_IsSigned = false;
     A_Rest.resize(0, 0);
 }
 
@@ -269,6 +272,9 @@ bool Bignum::operator<(const Bignum& nb) const
 {
     bool result;
 
+    if(*this == nb)
+        return false;
+
     if(A_IsSigned != nb.A_IsSigned)
         return A_IsSigned;
 
@@ -414,7 +420,7 @@ void Bignum::operator-=(unsigned long long int nb)
 
     ///if très Sale!!!
     if(*this == 0){
-        *this = 1;
+        *this += nb;
         A_IsSigned = true;
         return;
     }
@@ -458,7 +464,15 @@ void Bignum::operator-=(unsigned long long int nb)
 
 void Bignum::operator-=(const Bignum& nb)
 {
-    Bignum cp;
+    Bignum cp(nb);
+
+
+    if(*this == 0){
+        cp.A_IsSigned = false;
+        *this += cp;
+        A_IsSigned = !nb.A_IsSigned;
+        return;
+    }
 
     if(A_IsSigned != nb.A_IsSigned)
     {
@@ -468,7 +482,7 @@ void Bignum::operator-=(const Bignum& nb)
     }
     else
     {
-        if(*this < nb)
+        if((*this < nb && *this > 0) || (nb < 0 && *this > nb))
         {
             cp = *this;
             *this = nb;
@@ -652,3 +666,4 @@ Bignum Bignum::operator--(int)
     --(*this);
     return cp;
 }
+
