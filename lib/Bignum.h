@@ -1,6 +1,6 @@
 /** Bignum.h
  * by Blackwolffire
- * 02/13/2015 | 07/16/2015
+ * 02/13/2015 | 08/27/2015
  * Declaration of Bignum class
  */
 
@@ -56,6 +56,10 @@ class Bignum
         void BigPow(Bignum exponent);
         unsigned long long int getSize() const {return A_Bignum.size();}
         bool getSign() const {return A_IsSigned;}
+        std::string compress_Bignum(unsigned int length = 0);
+        std::string toString() const;
+
+        static Bignum decompress_Bignum(const std::string& bnb);
 
     private:
         std::vector<unsigned char> A_Bignum;

@@ -1,6 +1,6 @@
 /** Bignum.cpp
  * by Blackwolffire
- * 02/13/2015 | 07/24/2015
+ * 02/13/2015 | 08/27/2015
  * Defines functions for Bignum class.
  */
 
@@ -666,4 +666,69 @@ Bignum Bignum::operator--(int)
     --(*this);
     return cp;
 }
+
+std::string Bignum::compress_Bignum(unsigned int length)
+{
+    long long int i(A_Bignum.size() - 1);
+    std::string str("");
+
+    if(!length)
+        length = A_Bignum.size();
+
+    for(; length > A_Bignum.size(); length -= 2)
+        str += static_cast<char>(0);
+
+    if(A_Bignum.size() % 2)
+        str += A_Bignum[i--];
+
+    for(; i > 0; i -= 2){
+        str += (A_Bignum[i] << 4 | A_Bignum[i - 1]);
+    }
+
+    return str;
+}
+
+std::string Bignum::toString() const
+{
+    std::string result("");
+
+    if(A_IsSigned)
+        result += '-';
+
+    for(unsigned long long int i (0); i < A_Bignum.size(); ++i)
+        result += A_Bignum[i];
+}
+
+/// STATIC ////////////////////////////////////////////////////////////////////////
+
+Bignum Bignum::decompress_Bignum(const std::string& bnb)
+{
+    std::string strResult("");
+    Bignum result(0);
+
+    for(long long int i(0); i < bnb.length(); ++i){
+        strResult.insert(strResult.end(), (bnb[i] >> 4) & 0x0F + '0');
+        strResult.insert(strResult.end(), (bnb[i] & 0x0F) + '0');
+    }
+    result = strResult;
+    return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
