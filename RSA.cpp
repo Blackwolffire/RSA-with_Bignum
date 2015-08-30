@@ -83,16 +83,6 @@ Bignum RSA_System::getNextPrime(Bignum nb)
     return nb;
 }
 
-Bignum RSA_System::getHashKey(string str)
-{
-    Bignum result;
-    result = getNumberStr(str);
-    result %= MAX_HASH_NB;
-    if(result < 20)
-        result += 20;
-    return result;
-}
-
 string RSA_System::getNumberStr(string str)
 {
     string strResult = "";
@@ -110,32 +100,6 @@ string RSA_System::getCaracStrNb(unsigned char carac)
         result += carac % 10 + '0';
         carac /= 10;
     }
-    return result;
-}
-
-vector<Bignum> RSA_System::getPrimeNumber(string str)
-{
-    char carac;
-    string cp_str(str);
-    Bignum p, q;
-    vector<Bignum> result;
-    result.resize(3, 0);
-
-    result[0] = getNextPrime(getHashKey(str));
-
-    for(unsigned short int i(0); i < str.length() / 2; ++i){
-        carac = str[i];
-        cp_str[i] = str[str.length() - 1 - i];
-        cp_str[str.length() - 1 - i] = carac;
-    }
-    result[1] = getNextPrime(getHashKey(cp_str));
-
-    p = getNumberStr(str);
-    q = getNumberStr(cp_str);
-    p *= q;
-
-    result[2] = getNextPrime(p % getNextPrime(MAX_HASH_NB / 100));
-
     return result;
 }
 
@@ -184,17 +148,53 @@ bool RSA_System::fileExist (const string& name)
 
 /// NON STATIC /////////////////////////////////////////////////////
 
-RSA_System::RSA_System() : A_IsInit(false)
+RSA_System::RSA_System(unsigned long long int keySize) : A_IsInit(false), A_KeySize(keySize)
 {
 }
 
-RSA_System::RSA_System(string str) : A_IsInit(false)
+RSA_System::RSA_System(unsigned long long int keySize, string str) : A_IsInit(false), A_KeySize(keySize)
 {
     RSA_Init(str);
 }
 
-void RSA_System::RSA_Init(string str)
+Bignum RSA_System::getHashKey(string str)
 {
+    Bignum result;
+    result = getNumberStr(str);
+    result %= A_KeySize;
+    return result;
+}
+
+vector<Bignum> RSA_System::getPrimeNumber(string str)
+{
+    char carac;
+    string cp_str(str);
+    Bignum p, q;
+    vector<Bignum> result;
+    result.resize(3, 0);
+
+    result[0] = getNextPrime(getHashKey(str));
+
+    for(unsigned short int i(0); i < str.length() / 2; ++i){
+        carac = str[i];
+        cp_str[i] = str[str.length() - 1 - i];
+        cp_str[str.length() - 1 - i] = carac;
+    }
+    result[1] = getNextPrime(getHashKey(cp_str));
+
+    p = getNumberStr(str);
+    q = getNumberStr(cp_str);
+    p *= q;
+
+    result[2] = getNextPrime(p % getNextPrime(A_KeySize / 100));
+
+    return result;
+}
+
+void RSA_System::RSA_Init(string str, unsigned long long int keySize)
+{
+    A_KeySize = keySize;
+
     Bignum fi, k(0);
     vector<Bignum> PQE = getPrimeNumber(str);
 
@@ -280,6 +280,7 @@ void RSA_System::crypt_string(string destination, std::string data)
     }
 
     file.close();
+    cout << '\a';
 }
 
 void RSA_System::crypt_file(string destination, string dataFile)
@@ -333,6 +334,7 @@ void RSA_System::crypt_file(string destination, string dataFile)
 
     outfile.close();
     infile.close();
+    cout << '\a';
 }
 
 // Decryption
@@ -374,17 +376,18 @@ void RSA_System::decrypt_string(std::string destination, std::string data)
     cout << "chargement: 0%\n";
     for(unsigned long long int i(0); i < data.length(); i += (nLength / 2 + nLength % 2)){
         file << decrypt_Bignum(Bignum::decompress_Bignum(data.substr(i, (nLength / 2 + nLength % 2))));
-        if(carac != ((i + 1) * 100 /  data.length() / (nLength / 2 + nLength % 2))){
-            carac = (i + 1) * 100 /  data.length() / (nLength / 2 + nLength % 2);
+        if(carac != ((i + (nLength / 2 + nLength % 2)) * 100 /  data.length())){
+            carac = (i + (nLength / 2 + nLength % 2)) * 100 /  data.length();
             cout << "chargement: " <<  static_cast<unsigned short int>(carac) << "%\n";
         }
     }
     file.close();
+    cout << '\a';
 }
 
 void RSA_System::decrypt_file(string destination, string dataFile)
 {
-    unsigned char carac, cac;
+    unsigned char carac;
     unsigned int length, nLength(n.getSize());
     string str;
     ofstream outfile;
@@ -427,19 +430,13 @@ void RSA_System::decrypt_file(string destination, string dataFile)
         for(unsigned int j(0); j < (nLength / 2 + nLength % 2); ++j)
             str += infile.get();
 
-        cac = decrypt_Bignum(Bignum::decompress_Bignum(str));
-        cout << cac << static_cast<short int>(cac);
-        outfile << cac;
-        if(carac != ((i + 1) * 100 / length)){
-            carac = (i + 1) * 100 / length;
+        outfile << decrypt_Bignum(Bignum::decompress_Bignum(str));
+        if(carac != ((i + (nLength / 2 + nLength % 2)) * 100 / length)){
+            carac = (i + (nLength / 2 + nLength % 2)) * 100 / length;
             cout << "chargement: " <<  static_cast<unsigned short int>(carac) << "%\n";
         }
     }
     infile.close();
     outfile.close();
+    cout << '\a';
 }
-
-
-
-
-

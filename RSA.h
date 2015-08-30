@@ -8,19 +8,23 @@
 #define RSA_H
 
 #include <iostream>
-#include "../Bignum/Bignum.h"
-
-#define MAX_HASH_NB 1000003 // Grand nombre premier pour moins de collision pendant génération de clé de hachage & limite la taille des nombre premier
+#include "../Bignum/Bignum.h" // J'ai mis ce projet sur GitHub aussi
 
 class RSA_System{
 
     public:
 
-        RSA_System();
-        RSA_System(std::string str);
+        enum{
+            SMALL = 1009,
+            NORMAL = 1000003,
+            HUGE = 1000000007    //pour du vrai cryptage RSA, HUGE c'est ridicule
+        };
+
+        RSA_System(unsigned long long int keySize = SMALL);
+        RSA_System(unsigned long long int keySize, std::string str);
         //~RSA_System();
 
-        void RSA_Init(std::string str);
+        void RSA_Init(std::string str, unsigned long long int keySize = SMALL);
         void crypt_string(std::string destination, std::string data);
         void crypt_file(std::string destination, std::string dataFile);
         void decrypt_string(std::string destination, std::string data);
@@ -37,13 +41,14 @@ class RSA_System{
 
     private:
 
-        static Bignum getHashKey(std::string str);
-        static std::vector<Bignum> getPrimeNumber(std::string str);
+        Bignum getHashKey(std::string str);
+        std::vector<Bignum> getPrimeNumber(std::string str);
 
         void crypt_byte(char data, Bignum& result);
         char decrypt_Bignum(Bignum data);
 
         bool A_IsInit;
+        unsigned long long int A_KeySize;
         Bignum n;
         Bignum e;
         Bignum d;
