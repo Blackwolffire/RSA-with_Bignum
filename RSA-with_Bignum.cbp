@@ -32,10 +32,10 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="../Bignum/Bignum.cpp" />
+		<Unit filename="../Bignum/Bignum.h" />
 		<Unit filename="RSA.cpp" />
 		<Unit filename="RSA.h" />
-		<Unit filename="lib/Bignum.cpp" />
-		<Unit filename="lib/Bignum.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

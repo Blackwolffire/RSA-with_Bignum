@@ -7,16 +7,12 @@ int main()
     string str;
     RSA_System myrs;
 
-    Bignum p(9694);
+    Bignum p(65);
 
     cin >> str;
     myrs.RSA_Init(str);
-cin >> str;
-    myrs.crypt_string("link.txt", str);
-
-cin >> str;
-    myrs.decrypt_string("linki.txt", str);
-
+    myrs.crypt_string("link.txt", "prout");
+    myrs.decrypt_file("linki.txt", "link.txt");
 
     return 0;
 }

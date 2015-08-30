@@ -1,6 +1,6 @@
 /** RSA.cpp
  * by Blackwolffire
- * 07/16/2015 | 08/27/2015
+ * 07/16/2015 | 08/30/2015
  * Defines functions for RSA class.
  */
 #include <fstream>
@@ -88,8 +88,8 @@ Bignum RSA_System::getHashKey(string str)
     Bignum result;
     result = getNumberStr(str);
     result %= MAX_HASH_NB;
-    if(result < 500)
-        result += 500;
+    if(result < 20)
+        result += 20;
     return result;
 }
 
@@ -226,6 +226,8 @@ void RSA_System::RSA_Init(string str)
         d = PQE[1] - k * fi;
     }
     A_IsInit = true;
+
+    cout << "Public Key : " << n << '\t' << e << "\nPrivate Key : " << d << '\t' << n << endl;
 }
 
 // Encryption
@@ -266,7 +268,8 @@ void RSA_System::crypt_string(string destination, std::string data)
         return;
     }
 
-    carac = 1;
+    carac = 0;
+    cout << "chargement: 0%\n";
     for(unsigned long long int i(0); i < data.length(); ++i){
         crypt_byte(data[i], nb);
         file << nb.compress_Bignum(nLength);
@@ -317,7 +320,8 @@ void RSA_System::crypt_file(string destination, string dataFile)
     infile.seekg(0, ios::end);
     length = infile.tellg();
     infile.seekg(0, ios::beg);
-    carac = 1;
+    carac = 0;
+    cout << "chargement: 0%\n";
     for(unsigned long long int i(0); i < length; ++i){
         crypt_byte(infile.get(), nb);
         outfile << nb.compress_Bignum(nlength);
@@ -339,14 +343,14 @@ char RSA_System::decrypt_Bignum(Bignum data)
 
     data.BigPow(d);
     data %= n;
-    str = data.toString();
+    str = data.toChar();
 
     return str[0];
 }
 
 void RSA_System::decrypt_string(std::string destination, std::string data)
 {
-    unsigned char carac(101);
+    unsigned char carac;
     unsigned int nLength(n.getSize());
     ofstream file;
 
@@ -366,16 +370,74 @@ void RSA_System::decrypt_string(std::string destination, std::string data)
         return;
     }
 
-    for(unsigned long long int i(0); i + nLength < data.length(); i += nLength){
-        file << decrypt_Bignum(Bignum::decompress_Bignum(data.substr(i, nLength)));
-        if(carac != ((i + 1) * 100 /  (data.length() / nLength))){
-            carac = (i + 1) * 100 /  (data.length() / nLength);
+    carac = 0;
+    cout << "chargement: 0%\n";
+    for(unsigned long long int i(0); i < data.length(); i += (nLength / 2 + nLength % 2)){
+        file << decrypt_Bignum(Bignum::decompress_Bignum(data.substr(i, (nLength / 2 + nLength % 2))));
+        if(carac != ((i + 1) * 100 /  data.length() / (nLength / 2 + nLength % 2))){
+            carac = (i + 1) * 100 /  data.length() / (nLength / 2 + nLength % 2);
             cout << "chargement: " <<  static_cast<unsigned short int>(carac) << "%\n";
         }
     }
+    file.close();
 }
 
+void RSA_System::decrypt_file(string destination, string dataFile)
+{
+    unsigned char carac, cac;
+    unsigned int length, nLength(n.getSize());
+    string str;
+    ofstream outfile;
+    ifstream infile;
 
+    if(!fileExist(dataFile)){
+        cout << "Erreur: Le fichier a crypter n'existe pas.\n";
+        return;
+    }
+
+    if(destination == dataFile){
+        cout << "Erreur: Tu es con.";
+        return;
+    }
+
+    if(fileExist(destination)){
+        cout << "Erreur: Le fichier " + destination + " existe deja. Voulez-vous le supprimer? (y/n)\n";
+        cin >> carac;
+        if(toupper(carac) == 'Y')
+            remove(destination.c_str());
+        else
+            return;
+    }
+
+    outfile.open(destination.c_str());
+    infile.open(dataFile.c_str());
+
+    if(!outfile || !infile){
+        cout << "Erreur: Un fichier ne peut pas s'ouvrir.\n";
+        return;
+    }
+
+    infile.seekg(0, ios::end);
+    length = infile.tellg();
+    infile.seekg(0, ios::beg);
+    carac = 0;
+    cout << "chargement: 0%\n";
+    for(unsigned long long int i(0); i < length; i += (nLength / 2 + nLength % 2)){
+        str = "";
+        for(unsigned int j(0); j < (nLength / 2 + nLength % 2); ++j)
+            str += infile.get();
+
+        cac = decrypt_Bignum(Bignum::decompress_Bignum(str));
+        cout << cac << static_cast<short int>(cac);
+        outfile << cac;
+        if(carac != ((i + 1) * 100 / length)){
+            carac = (i + 1) * 100 / length;
+            cout << "chargement: " <<  static_cast<unsigned short int>(carac) << "%\n";
+        }
+    }
+    infile.close();
+    outfile.close();
+}
 
 
 

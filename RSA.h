@@ -1,6 +1,6 @@
 /** RSA.h
  * by Blackwolffire
- * 07/16/2015 | 08/27/2015
+ * 07/16/2015 | 08/30/2015
  * Declaration of RSA class
  */
 
@@ -8,7 +8,7 @@
 #define RSA_H
 
 #include <iostream>
-#include "lib\Bignum.h"
+#include "../Bignum/Bignum.h"
 
 #define MAX_HASH_NB 1000003 // Grand nombre premier pour moins de collision pendant génération de clé de hachage & limite la taille des nombre premier
 
@@ -24,6 +24,7 @@ class RSA_System{
         void crypt_string(std::string destination, std::string data);
         void crypt_file(std::string destination, std::string dataFile);
         void decrypt_string(std::string destination, std::string data);
+        void decrypt_file(std::string destination, std::string dataFile);
 
         static Bignum getLeastFactor(Bignum nb);
         static bool isPrime(const Bignum& nb);
