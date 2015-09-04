@@ -3,6 +3,7 @@
  * 07/16/2015 | 08/30/2015
  * Defines functions for RSA class.
  */
+
 #include <fstream>
 #include "RSA.h"
 

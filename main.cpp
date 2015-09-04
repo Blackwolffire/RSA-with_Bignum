@@ -12,11 +12,11 @@ int main()
     do{
         cout << '\a';
         do{
-            cout << "Veuillez entrer votre mot de passe (4 caracteres ou plus):\n";
+            cout << "Veuillez entrer votre mot de passe (5 caracteres ou plus):\n";
             cin >> str;
             for(unsigned short int i(0); i < 500; ++i)
                 cout << endl;
-        }while(str.length() < 4);
+        }while(str.length() < 5);
 
         do{
             cout << "Selectionnez la taille des cles: Small Normal ou Huge (S N H)\n";
@@ -24,7 +24,7 @@ int main()
             carac = toupper(carac);
         }while(carac != 'S' && carac != 'N' && carac != 'H');
 
-        cout << "Veuillez patienter longtemps pendant la génération de cles...\n";
+        cout << "Veuillez patienter longtemps pendant la generation de cles...\n";
 
         switch(carac)
         {
